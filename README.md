@@ -4,7 +4,6 @@
 
 ```bash
 bundle check || bundle install
-bundle exec rake build
 [sudo] bundle exec rake install:local
 ```
 
