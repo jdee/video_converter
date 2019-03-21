@@ -1,0 +1,5 @@
+require_relative File.join('video_converter', 'core_ext', 'io')
+require_relative File.join('video_converter', 'core_ext', 'string')
+require_relative File.join('video_converter', 'mp4info')
+require_relative File.join('video_converter', 'util')
+require_relative File.join('video_converter', 'version')
