@@ -1,4 +1,4 @@
-# video-converter gem (macOS only)
+# video-converter gem
 
 ## Overview
 
@@ -42,6 +42,14 @@ after conversion.
 
 After conversion, by default, all source videos are removed from the input
 folder if it is writable. Override this behavior using the `--no-clean` option.
+
+### Non-macOS install
+
+Install `ffmpeg` and `mp4v2` manually in order to use this utility. When
+running `convert_videos` in the background, if `terminal-notifier` cannot be
+installed, a warning will be generated, but conversion will proceed. No
+notification will be generated. If `ffmpeg` and `mp4v2` are not available,
+this is a fatal error unless they can be installed automatically via `brew`.
 
 ## Build and install
 

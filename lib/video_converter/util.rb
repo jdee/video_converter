@@ -43,18 +43,18 @@ module VideoConverter
       exception.nil? ? command : exception
     end
 
-    # Check for required commands.
+    # Check for commands.
     #
-    # @param required_commands [Array<#to_s>, #to_s] A list of commands to check for
+    # @param commands [Array<#to_s>, #to_s] A list of commands to check for
     # @param log [IO] Optional log to write to
     # @return true if all required commands successfully installed, false otherwise
-    def check_required_commands(required_commands, log: STDOUT)
-      required_commands = [required_commands] unless required_commands.kind_of?(Array)
-      to_install = required_commands.reject { |c| have_command? c }.map { |c| package_for_command c }
+    def check_commands(commands, log: STDOUT)
+      commands = [commands] unless commands.kind_of?(Array)
+      to_install = commands.reject { |c| have_command? c }.map { |c| package_for_command c }
       return true if to_install.empty?
 
       unless have_brew?
-        log.log "brew command not found. Cannot install required software: #{to_install.join ', '}.".red
+        log.log "brew command not found. Cannot install packages: #{to_install.join ', '}.".yellow
         return false
       end
 
