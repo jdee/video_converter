@@ -3,7 +3,7 @@
 ## Build and install
 
 ```bash
-bundle check || bundle install
+bundle install
 [sudo] bundle exec rake install:local
 ```
 
