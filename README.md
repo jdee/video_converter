@@ -46,7 +46,7 @@ folder if it is writable. Override this behavior using the `--no-clean` option.
 ## Build and install
 
 ```bash
-bundle install
+bundle check || bundle install
 [sudo] bundle exec rake install:local
 ```
 
