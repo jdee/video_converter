@@ -19,7 +19,14 @@ module VideoConverter
     # @param command [#to_s] A command to check for
     # @return true if found, false otherwise
     def have_command?(command)
-      !`which #{command}`.empty?
+      # Less shell-dependent way of checking than
+      # !`which #{command}`.empty?
+      # Assumes that running each command with no args produces no side
+      # effects.
+      system command.to_s
+      true
+    rescue Errno::ENOENT
+      false
     end
 
     # Install a package using homebrew.
