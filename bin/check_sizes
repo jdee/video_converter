@@ -45,7 +45,8 @@ OptionParser.new do |opts|
   indent = ' ' * prefix.length
 
   opts.banner = "#{prefix} [-h|--help]\n" \
-    "#{indent}[-v|--[no-]verbose]\n" \
+    "#{indent}[-v|--version]\n" \
+    "#{indent}[-V|--[no-]verbose]\n" \
     "#{indent}[-F|--[no-]fix]\n" \
     "#{indent}[-f FOLDER|--folder=FOLDER]\n" \
     "#{indent}[-t THRESHOLD|--threshold=THRESHOLD]\n" \
@@ -56,7 +57,12 @@ OptionParser.new do |opts|
     exit
   end
 
-  opts.on '-v', '--[no-]verbose', 'Generate extra output at times' do |v|
+  opts.on '-v', '--version', 'Prints the version number' do
+    puts "check_sizes: video_converter #{VideoConverter::VERSION}"
+    exit
+  end
+
+  opts.on '-V', '--[no-]verbose', 'Generate extra output at times' do |v|
     @options.verbose = v
   end
 
