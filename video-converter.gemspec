@@ -11,9 +11,6 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Jimmy Dee']
   spec.email         = ['jgvdthree@gmail.com']
 
-  # Requires homebrew
-  spec.platform      = 'darwin'
-
   spec.files         = Dir['bin/*', 'lib/**/*'] + %w{README.md LICENSE}
   spec.test_files    = spec.files.grep(/_spec/)
 
@@ -21,7 +18,6 @@ Gem::Specification.new do |spec|
   spec.bindir        = 'bin'
   spec.executables   = %w{convert_videos check_sizes}
 
-  spec.homepage      = 'https://github.com/jdee/video-converter'
   spec.license       = 'MIT'
 
   spec.required_ruby_version = '>= 2.2.0'

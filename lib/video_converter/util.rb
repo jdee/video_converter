@@ -50,16 +50,16 @@ module VideoConverter
     # @return true if all required commands successfully installed, false otherwise
     def check_required_commands(required_commands, log: STDOUT)
       required_commands = [required_commands] unless required_commands.kind_of?(Array)
-      to_install = required_commands.reject { |c| have_command? c }
+      to_install = required_commands.reject { |c| have_command? c }.map { |c| package_for_command c }
       return true if to_install.empty?
 
       unless have_brew?
-        log.log 'brew command not found. Cannot install required software.'.red
+        log.log "brew command not found. Cannot install required software: #{to_install.join ', '}.".red
         return false
       end
 
-      to_install.map do |command|
-        install(package_for_command(command), log: log)
+      to_install.map do |package|
+        install package, log: log
       end.all?
     end
   end
