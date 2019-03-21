@@ -23,7 +23,7 @@ module VideoConverter
       # !`which #{command}`.empty?
       # Assumes that running each command with no args produces no side
       # effects.
-      system command.to_s, %i[err out] => '/dev/null'
+      system command.to_s, %i[err out] => :close
       true
     rescue Errno::ENOENT
       false
