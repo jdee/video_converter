@@ -263,7 +263,8 @@ module VideoConverter
     end
 
     def mac?
-      TTY::Platform.new.mac?
+      @platform = TTY::Platform.new if @platform.nil?
+      @platform.mac?
     end
 
     def run(options)
