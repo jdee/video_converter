@@ -307,8 +307,6 @@ def clean_sources(log)
 end
 
 def notify_user(count, log)
-  return unless have_command?('terminal-notifier')
-
   message = "Converted #{count} video#{count > 1 ? 's' : ''}."
   log.log message.cyan.bold
 
@@ -328,7 +326,9 @@ def notify_user(count, log)
 
   command += ['-contentImage', preview_path] if count > 0
 
-  system(*command)
+  # terminal-notifier is a runtime dependency and so will always be present.
+  # On any platform besides macOS, this command will quietly fail.
+  system(*command, %i[err out] => :close)
 
   FileUtils.rm_f preview_path
 end
@@ -353,17 +353,11 @@ else
     File.open @log_file, 'w' do |log|
       log.log "Process priority is #{Process.getpriority Process::PRIO_PROCESS, 0} for PID #{Process.pid}."
 
-      # Attempt to insure that terminal-notifier is installed. Will report an
-      # error if it can't be installed, but will continue.
-      unless check_commands 'terminal-notifier', log: log
-        log.log 'Failed to install terminal-notifier. No notification will be generated.'.yellow
-      end
-
       first_video = all_videos.first if video_count > 0
       convert_all log: log
 
       # Generate a preview
-      if first_video && have_command?('terminal-notifier')
+      if first_video
         command = make_preview_command output_path(first_video)
         log.log_command command
         system(*command, %i[err out] => File.join(@options.log_folder, 'preview.log'))

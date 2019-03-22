@@ -46,8 +46,7 @@ folder if it is writable. Override this behavior using the `--no-clean` option.
 ### Non-macOS install
 
 Install `ffmpeg` and `mp4v2` manually in order to use this utility. When
-running `convert_videos` in the background, if `terminal-notifier` cannot be
-installed, a warning will be generated, but conversion will proceed. No
+running `convert_videos` in the background, no
 notification will be generated. If `ffmpeg` and `mp4v2` are not available,
 this is a fatal error unless they can be installed automatically via `brew`.
 
@@ -99,10 +98,13 @@ $ convert_videos -Fo ~/myvideos
 ```Ruby
 source 'https://rubygems.org'
 
-gem 'rake', '~> 12.3'
-# terminal-notifier must be in the Gemfile
-gem 'terminal-notifier', '~> 2.0'
+gem 'rake', '~> 12.3' # If you want the Rake task
 gem 'video-converter', path: '~/video-converter'
+```
+
+```bash
+$ bundle check || bundle install
+$ bundle exec convert_videos -h
 ```
 
 ## Rake task
@@ -111,7 +113,7 @@ gem 'video-converter', path: '~/video-converter'
 # Add to Rakefile
 require 'video_converter/rake_task'
 VideoConverter::RakeTask.new(
-  :convert_videos,
+  :convert,
   input: '~/Downloads',
   output: '~/Desktop',
   logs: '~/logs/convert_videos'
@@ -119,5 +121,5 @@ VideoConverter::RakeTask.new(
 ```
 
 ```bash
-$ rake convert_videos
+$ bundle exec rake convert
 ```
