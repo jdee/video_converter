@@ -113,15 +113,18 @@ $ bundle exec convert_videos -h
 # Add to Rakefile
 require 'video_converter/rake_task'
 VideoConverter::RakeTask.new(
-  :convert,
-  input: '~/Downloads',
-  output: '~/Desktop',
-  logs: '~/logs/video_converter'
+  :convert_videos,
+  verbose: false,
+  foreground: false,
+  clean: true,
+  input_folder: '~/Downloads',
+  output_folder: '~/Desktop',
+  log_folder: '~/logs/video_converter'
 )
 ```
 
 ```bash
-$ bundle exec rake convert
+$ bundle exec rake convert_videos
 ```
 
 ## Ruby code

@@ -14,21 +14,34 @@ module VideoConverter
   #
   #   # override default options and task name
   #   VideoConverter::RakeTask.new(
-  #     :convert,
-  #     input: '~/Downloads',
-  #     output: '~/Desktop',
-  #     logs: '~/logs/video_converter'
+  #     :convert_videos,
+  #     verbose: false,
+  #     foreground: false,
+  #     clean: true,
+  #     input_folder: '~/Downloads',
+  #     output_folder: '~/Desktop',
+  #     logs_folder: '~/logs/video_converter'
   #   )
   class RakeTask < Rake::TaskLib
     def initialize(
       name = :convert_videos,
-      input: VideoConverter::Converter::DEFAULT_FOLDER,
-      output: VideoConverter::Converter::DEFAULT_OUTPUT_FOLDER,
-      logs: VideoConverter::Converter::DEFAULT_LOG_FOLDER
+      verbose: false,
+      foreground: false,
+      clean: true,
+      input_folder: VideoConverter::Converter::DEFAULT_FOLDER,
+      output_folder: VideoConverter::Converter::DEFAULT_OUTPUT_FOLDER,
+      log_folder: VideoConverter::Converter::DEFAULT_LOG_FOLDER
     )
       desc 'Convert videos'
       task name do
-        converter = VideoConverter::Converter.new input_folder: input, log_folder: logs, output_folder: output
+        converter = VideoConverter::Converter.new(
+          verbose: verbose,
+          foreground: foreground,
+          clean: clean,
+          input_folder: input_folder,
+          log_folder: log_folder,
+          output_folder: output_folder
+        )
         converter.run
       end
     end
