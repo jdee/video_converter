@@ -7,7 +7,7 @@ require_relative 'util'
 
 module VideoConverter
   # Class for video conversion
-  #    require 'video_converter'
+  #    require 'video_converter/converter'
   #    VideoConverter::Converter.new(
   #      verbose: false,
   #      foreground: false,

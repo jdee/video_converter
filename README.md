@@ -127,7 +127,7 @@ $ bundle exec rake convert
 ## Ruby code
 
 ```Ruby
-require 'video_converter'
+require 'video_converter/converter'
 VideoConverter::Converter.new(
   verbose: false,
   foreground: false,
