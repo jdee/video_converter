@@ -1,7 +1,6 @@
 require 'rake'
 require 'rake/tasklib'
-# TODO: Refactor all this
-# require_relative File.join('..', 'video_converter')
+require_relative File.join('..', 'video_converter')
 
 module VideoConverter
   # Rake task for video-converter gem.
@@ -21,14 +20,18 @@ module VideoConverter
   #     logs: '~/logs/convert_videos'
   #   )
   class RakeTask < Rake::TaskLib
-    def initialize(name = :convert_videos, input: '~/Downloads', output: '~/Desktop', logs: '~/logs/convert_videos')
+    include VideoConverter::Converter
+
+    def initialize(name = :convert_videos, input: DEFAULT_FOLDER, output: DEFAULT_OUTPUT_FOLDER, logs: DEFAULT_LOG_FOLDER)
       desc 'Convert videos'
       task name do
-        system(
-          'convert_videos',
-          "--folder=#{File.expand_path input}",
-          "--output-folder=#{File.expand_path output}",
-          "--log-folder=#{File.expand_path logs}"
+        run Options.new(
+          false,
+          false,
+          true,
+          File.expand_path(input),
+          File.expand_path(logs),
+          File.expand_path(output)
         )
       end
     end
