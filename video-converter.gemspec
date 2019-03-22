@@ -24,6 +24,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'colored', '~> 1.2'
   spec.add_dependency 'terminal-notifier', '~> 2.0'
+  spec.add_dependency 'tty-platform', '~> 0.2'
 
   spec.add_development_dependency 'bundler', '~> 2.0'
   spec.add_development_dependency 'pry', '~> 0.12'

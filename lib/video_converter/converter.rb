@@ -1,5 +1,6 @@
 require 'colored'
 require 'fileutils'
+require 'tty/platform'
 require 'tmpdir'
 require_relative 'mp4info'
 require_relative 'util'
@@ -261,6 +262,10 @@ module VideoConverter
       options.clean
     end
 
+    def mac?
+      TTY::Platform.new.mac?
+    end
+
     def run(options)
       @options = options
 
@@ -282,6 +287,8 @@ module VideoConverter
 
             first_video = all_videos.first if video_count > 0
             convert_all log: log
+
+            exit(0) unless mac?
 
             # Generate a preview
             if first_video
