@@ -1,7 +1,7 @@
 require 'colored'
 require 'fileutils'
-require 'tty/platform'
 require 'tmpdir'
+require 'tty/platform'
 require_relative 'mp4info'
 require_relative 'util'
 
