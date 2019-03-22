@@ -11,7 +11,15 @@ YARD::Rake::YardocTask.new
 
 LOG_DIR = 'logs'
 require_relative File.join('lib', 'video_converter', 'rake_task')
-VideoConverter::RakeTask.new :convert, log_folder: LOG_DIR
+VideoConverter::RakeTask.new(
+  :convert,
+  # verbose:       true,          # false by default
+  # foreground:    true,          # false by default
+  # clean:         false,         # true by default
+  # input_folder:  '~/Downloads', # default value
+  # output_folder: '~/Desktop',   # default value
+  log_folder: LOG_DIR
+)
 
 desc 'Remove all generated files'
 task 'clobber:all' do
