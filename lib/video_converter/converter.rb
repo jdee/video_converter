@@ -109,7 +109,7 @@ module VideoConverter
         end
 
         unless pid.zero?
-          log "Child process is #{pid}. Output in #{@log_file}."
+          STDOUT.log "Child process is #{pid}. Output in #{@log_file}."
           exit 0
         end
       end

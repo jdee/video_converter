@@ -27,12 +27,3 @@ class IO
     nil
   end
 end
-
-# Logs a message to STDOUT with obfuscation and a timestamp.
-# @see String#obfuscate!
-#
-# @param message [#to_s] A message to log. Will be converted to a String and obfuscated.
-# @return nil
-def log(message)
-  STDOUT.log message
-end
