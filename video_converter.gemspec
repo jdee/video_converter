@@ -3,7 +3,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "video_converter/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = 'video-converter'
+  spec.name          = 'video_converter'
   spec.version       = VideoConverter::VERSION
   spec.summary       = 'Video conversion tools'
   spec.description   = 'Batch-converts videos to MP4 format. Can also reencode MP4 ' \

@@ -1,4 +1,4 @@
-# video-converter gem
+# video_converter gem
 
 ## Overview
 
@@ -99,7 +99,7 @@ $ convert_videos -Fo ~/myvideos
 source 'https://rubygems.org'
 
 gem 'rake', '~> 12.3' # If you want the Rake task
-gem 'video-converter', path: '~/video-converter'
+gem 'video_converter', path: '~/video_converter'
 ```
 
 ```bash
