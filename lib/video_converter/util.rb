@@ -19,23 +19,19 @@ module VideoConverter
     # @param command [#to_s] A command to check for
     # @return true if found, false otherwise
     def have_command?(command)
-      # Less shell-dependent way of checking than
-      # !`which #{command}`.empty?
-      # Assumes that running each command with no args produces no side
-      # effects.
-      system command.to_s, %i[err out] => :close
-      true
-    rescue Errno::ENOENT
-      false
+      # May be shell-dependent, OS-dependent
+      # Kernel#system does not raise Errno::ENOENT when running under the Bundler
+      !`which #{command}`.empty?
     end
 
     # Install a package using homebrew.
     #
-    # @param package [#to_s] A package to be installed via homebrew
+    # @param packages [#to_s, Array<#to_s>] Packages to be installed via homebrew
     # @param log [IO] Optional log to write to
     # @return true if successful, false otherwise
-    def install(package, log: STDOUT)
-      command = ['brew', 'install', package.to_s]
+    def install(packages, log: STDOUT)
+      packages = [packages] unless packages.kind_of?(Array)
+      command = ['brew', 'install', *packages.map(&:to_s)]
       log.log_command command
       system(*command, %i[err out] => log)
     end
@@ -65,9 +61,7 @@ module VideoConverter
         return false
       end
 
-      to_install.map do |package|
-        install package, log: log
-      end.all?
+      install to_install, log: log
     end
   end
 end
