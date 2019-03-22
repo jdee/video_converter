@@ -8,9 +8,11 @@ class IO
   # @see String#obfuscate!
   #
   # @param message [#to_s] A message to log. Will be converted to a String and obfuscated.
+  # @param obfuscate [true, false] Obfuscate the message to be logged
   # @return nil
-  def log(message)
-    puts "#{DateTime.now} #{message.to_s.obfuscate}"
+  def log(message, obfuscate: true)
+    message = message.to_s.obfuscate if obfuscate
+    puts "#{DateTime.now} #{message}"
   end
 
   # Logs a command to be executed by a call such as Kernel#system.

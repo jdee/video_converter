@@ -11,13 +11,13 @@ class String
 
   # Obfuscates the receiver by first replacing all instances
   # of the HOME environment variable with '~' and then all instances of
-  # USER with '${USER}'.
+  # USER with '$USER'.
   # @see #obfuscate
   #
   # @return nil
   def obfuscate!
     gsub!(/#{Regexp.quote ENV['HOME']}/, '~')
-    gsub!(/#{Regexp.quote ENV['USER']}/, '${USER}')
+    gsub!(/#{Regexp.quote ENV['USER']}/, '$USER')
     nil
   end
 
