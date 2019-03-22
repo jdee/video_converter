@@ -9,4 +9,13 @@ RuboCop::RakeTask.new(:rubocop)
 require 'yard'
 YARD::Rake::YardocTask.new
 
+LOG_DIR = 'logs'
+require_relative File.join('lib', 'video_converter', 'rake_task')
+VideoConverter::RakeTask.new :convert, logs: LOG_DIR
+
+desc 'Remove video conversion logs'
+task 'convert:clean' do
+  FileUtils.rm_rf LOG_DIR
+end
+
 task default: [:spec, :rubocop]
