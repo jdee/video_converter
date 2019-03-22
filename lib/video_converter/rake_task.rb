@@ -29,9 +29,9 @@ module VideoConverter
           false,
           false,
           true,
-          File.expand_path(input),
-          File.expand_path(logs),
-          File.expand_path(output)
+          input,
+          logs,
+          output
         )
       end
     end

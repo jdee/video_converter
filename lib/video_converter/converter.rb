@@ -6,6 +6,17 @@ require_relative 'mp4info'
 require_relative 'util'
 
 module VideoConverter
+  # Mixin for video conversion
+  #    require 'video_converter'
+  #    include VideoConverter::Converter
+  #    run Options.new(
+  #      false,
+  #      false,
+  #      true,
+  #      '~/Downloads',
+  #      '~/logs/convert_videos',
+  #      '~/Desktop'
+  #    )
   module Converter
     Options = Struct.new(
       :verbose,
@@ -16,9 +27,9 @@ module VideoConverter
       :output_folder
     )
 
-    DEFAULT_FOLDER = File.expand_path '~/Downloads'
-    DEFAULT_LOG_FOLDER = File.expand_path '~/logs/convert_videos'
-    DEFAULT_OUTPUT_FOLDER = File.expand_path '~/Desktop'
+    DEFAULT_FOLDER = '~/Downloads'
+    DEFAULT_LOG_FOLDER = '~/logs/convert_videos'
+    DEFAULT_OUTPUT_FOLDER = '~/Desktop'
 
     THRESHOLD = 0.9
 
@@ -269,6 +280,9 @@ module VideoConverter
 
     def run(options)
       @options = options
+      @options.folder = File.expand_path options.folder
+      @options.output_folder = File.expand_path options.output_folder
+      @options.log_folder = File.expand_path options.log_folder
 
       if foreground?
         convert_all
