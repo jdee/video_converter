@@ -13,9 +13,17 @@ LOG_DIR = 'logs'
 require_relative File.join('lib', 'video_converter', 'rake_task')
 VideoConverter::RakeTask.new :convert, logs: LOG_DIR
 
-desc 'Remove video conversion logs'
-task 'convert:clean' do
-  FileUtils.rm_rf LOG_DIR
+desc 'Remove all generated files'
+task 'clobber:all' do
+  Rake::Task[:clobber].invoke
+  FileUtils.rm_rf [
+    LOG_DIR,
+    'coverage',
+    'doc',
+    '.yardoc',
+    '_yardoc',
+    'test-results'
+  ]
 end
 
 task default: [:spec, :rubocop]
