@@ -6,10 +6,9 @@ require_relative 'mp4info'
 require_relative 'util'
 
 module VideoConverter
-  # Mixin for video conversion
+  # Class for video conversion
   #    require 'video_converter'
-  #    include VideoConverter::Converter
-  #    run Options.new(
+  #    options = VideoConverter::Converter::Options.new(
   #      false,
   #      false,
   #      true,
@@ -17,7 +16,9 @@ module VideoConverter
   #      '~/logs/convert_videos',
   #      '~/Desktop'
   #    )
-  module Converter
+  #    converter = VideoConverter::Converter.new options
+  #    converter.run
+  class Converter
     Options = Struct.new(
       :verbose,
       :foreground,
@@ -45,7 +46,14 @@ module VideoConverter
     include Util
     include MP4Info
 
-    attr_accessor :options
+    attr_reader :options
+
+    def initialize(options)
+      @options = options
+      @options.folder = File.expand_path options.folder
+      @options.output_folder = File.expand_path options.output_folder
+      @options.log_folder = File.expand_path options.log_folder
+    end
 
     def all_videos
       return @all_videos unless @all_videos.nil?
@@ -278,12 +286,7 @@ module VideoConverter
       @platform.mac?
     end
 
-    def run(options)
-      @options = options
-      @options.folder = File.expand_path options.folder
-      @options.output_folder = File.expand_path options.output_folder
-      @options.log_folder = File.expand_path options.log_folder
-
+    def run
       if foreground?
         convert_all
       else

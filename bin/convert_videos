@@ -3,19 +3,17 @@
 require 'optparse'
 require 'video_converter'
 
-include VideoConverter::Converter
-
 ################
 # Option parsing
 ################
 
-@options = Options.new(
+@options = VideoConverter::Converter::Options.new(
   false,
   false,
   true,
-  DEFAULT_FOLDER,
-  DEFAULT_LOG_FOLDER,
-  DEFAULT_OUTPUT_FOLDER
+  VideoConverter::Converter::DEFAULT_FOLDER,
+  VideoConverter::Converter::DEFAULT_LOG_FOLDER,
+  VideoConverter::Converter::DEFAULT_OUTPUT_FOLDER
 )
 
 OptionParser.new do |opts|
@@ -53,17 +51,18 @@ OptionParser.new do |opts|
     @options.clean = c
   end
 
-  opts.on '-f FOLDER', '--folder=FOLDER', "Folder for source videos (String: default #{DEFAULT_FOLDER})" do |f|
+  opts.on '-f FOLDER', '--folder=FOLDER', "Folder for source videos (String: default #{VideoConverter::Converter::DEFAULT_FOLDER})" do |f|
     @options.folder = f
   end
 
-  opts.on '-l LOG_FOLDER', '--log-folder=LOG_FOLDER', "Folder for log files (String: default #{DEFAULT_LOG_FOLDER})" do |l|
+  opts.on '-l LOG_FOLDER', '--log-folder=LOG_FOLDER', "Folder for log files (String: default #{VideoConverter::Converter::DEFAULT_LOG_FOLDER})" do |l|
     @options.log_folder = l
   end
 
-  opts.on '-o OUTPUT_FOLDER', '--output-folder=OUTPUT_FOLDER', "Folder for output files (String: default #{DEFAULT_OUTPUT_FOLDER})" do |o|
+  opts.on '-o OUTPUT_FOLDER', '--output-folder=OUTPUT_FOLDER', "Folder for output files (String: default #{VideoConverter::Converter::DEFAULT_OUTPUT_FOLDER})" do |o|
     @options.output_folder = o
   end
 end.parse!
 
-run @options
+converter = VideoConverter::Converter.new @options
+converter.run

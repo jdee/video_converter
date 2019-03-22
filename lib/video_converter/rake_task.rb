@@ -20,12 +20,15 @@ module VideoConverter
   #     logs: '~/logs/convert_videos'
   #   )
   class RakeTask < Rake::TaskLib
-    include VideoConverter::Converter
-
-    def initialize(name = :convert_videos, input: DEFAULT_FOLDER, output: DEFAULT_OUTPUT_FOLDER, logs: DEFAULT_LOG_FOLDER)
+    def initialize(
+      name = :convert_videos,
+      input: VideoConverter::Converter::DEFAULT_FOLDER,
+      output: VideoConverter::Converter::DEFAULT_OUTPUT_FOLDER,
+      logs: VideoConverter::Converter::DEFAULT_LOG_FOLDER
+    )
       desc 'Convert videos'
       task name do
-        run Options.new(
+        options = VideoConverter::Converter::Options.new(
           false,
           false,
           true,
@@ -33,6 +36,8 @@ module VideoConverter
           logs,
           output
         )
+        converter = VideoConverter::Converter.new options
+        converter.run
       end
     end
   end
