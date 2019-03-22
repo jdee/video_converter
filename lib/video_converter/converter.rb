@@ -8,16 +8,14 @@ require_relative 'util'
 module VideoConverter
   # Class for video conversion
   #    require 'video_converter'
-  #    options = VideoConverter::Converter::Options.new(
-  #      false,
-  #      false,
-  #      true,
-  #      '~/Downloads',
-  #      '~/logs/convert_videos',
-  #      '~/Desktop'
-  #    )
-  #    converter = VideoConverter::Converter.new options
-  #    converter.run
+  #    VideoConverter::Converter.new(
+  #      verbose: false,
+  #      foreground: false,
+  #      clean: true,
+  #      input_folder: '~/Downloads',
+  #      log_folder: '~/logs/video_converter',
+  #      output_folder: '~/Desktop'
+  #    ).run
   class Converter
     Options = Struct.new(
       :verbose,
@@ -29,7 +27,7 @@ module VideoConverter
     )
 
     DEFAULT_FOLDER = '~/Downloads'
-    DEFAULT_LOG_FOLDER = '~/logs/convert_videos'
+    DEFAULT_LOG_FOLDER = '~/logs/video_converter'
     DEFAULT_OUTPUT_FOLDER = '~/Desktop'
 
     THRESHOLD = 0.9
@@ -48,11 +46,73 @@ module VideoConverter
 
     attr_reader :options
 
-    def initialize(options)
-      @options = options
-      @options.folder = File.expand_path options.folder
-      @options.output_folder = File.expand_path options.output_folder
-      @options.log_folder = File.expand_path options.log_folder
+    # Create a new Converter
+    #
+    # @param options [Options] An Options struct containing configuration
+    # @param verbose [true, false] Output additional information at times
+    # @param foreground [true, false] Run in the foreground
+    # @param clean [true, false] Remove original videos after conversion
+    # @param input_folder [String] Folder to scan for input videos
+    # @param log_folder [String] Folder for log files (background)
+    # @param output_folder [String] Folder for output MP4 files
+    def initialize(
+      options = nil,
+      verbose: false,
+      foreground: false,
+      clean: true,
+      input_folder: DEFAULT_FOLDER,
+      log_folder: DEFAULT_LOG_FOLDER,
+      output_folder: DEFAULT_OUTPUT_FOLDER
+    )
+      @options = options || Options.new(
+        verbose,
+        foreground,
+        clean,
+        File.expand_path(input_folder),
+        File.expand_path(log_folder),
+        File.expand_path(output_folder)
+      )
+    end
+
+    # Perform video conversion
+    def run
+      if foreground?
+        convert_all
+      else
+        @log_file = File.join options.log_folder, 'convert_videos.log'
+
+        pid = fork do
+          Process.setpriority Process::PRIO_PROCESS, 0, 19
+          STDIN.close # Attempt to avoid SIGHUP
+
+          FileUtils.rm_rf options.log_folder
+          FileUtils.mkdir_p options.log_folder
+
+          video_count = all_videos.count
+          File.open @log_file, 'w' do |log|
+            log.log "Process priority is #{Process.getpriority Process::PRIO_PROCESS, 0} for PID #{Process.pid}."
+
+            first_video = all_videos.first if video_count > 0
+            convert_all log: log
+
+            exit(0) unless mac?
+
+            # Generate a preview
+            if first_video
+              command = make_preview_command output_path(first_video)
+              log.log_command command
+              system(*command, %i[err out] => File.join(options.log_folder, 'preview.log'))
+            end
+
+            notify_user video_count, log
+          end
+        end
+
+        unless pid.zero?
+          log "Child process is #{pid}. Output in #{@log_file}."
+          exit 0
+        end
+      end
     end
 
     def all_videos
@@ -284,46 +344,6 @@ module VideoConverter
     def mac?
       @platform = TTY::Platform.new if @platform.nil?
       @platform.mac?
-    end
-
-    def run
-      if foreground?
-        convert_all
-      else
-        @log_file = File.join options.log_folder, 'convert_videos.log'
-
-        pid = fork do
-          Process.setpriority Process::PRIO_PROCESS, 0, 19
-          STDIN.close # Attempt to avoid SIGHUP
-
-          FileUtils.rm_rf options.log_folder
-          FileUtils.mkdir_p options.log_folder
-
-          video_count = all_videos.count
-          File.open @log_file, 'w' do |log|
-            log.log "Process priority is #{Process.getpriority Process::PRIO_PROCESS, 0} for PID #{Process.pid}."
-
-            first_video = all_videos.first if video_count > 0
-            convert_all log: log
-
-            exit(0) unless mac?
-
-            # Generate a preview
-            if first_video
-              command = make_preview_command output_path(first_video)
-              log.log_command command
-              system(*command, %i[err out] => File.join(options.log_folder, 'preview.log'))
-            end
-
-            notify_user video_count, log
-          end
-        end
-
-        unless pid.zero?
-          log "Child process is #{pid}. Output in #{@log_file}."
-          exit 0
-        end
-      end
     end
   end
 end

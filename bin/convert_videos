@@ -11,9 +11,9 @@ require 'video_converter'
   false,
   false,
   true,
-  VideoConverter::Converter::DEFAULT_FOLDER,
-  VideoConverter::Converter::DEFAULT_LOG_FOLDER,
-  VideoConverter::Converter::DEFAULT_OUTPUT_FOLDER
+  File.expand_path(VideoConverter::Converter::DEFAULT_FOLDER),
+  File.expand_path(VideoConverter::Converter::DEFAULT_LOG_FOLDER),
+  File.expand_path(VideoConverter::Converter::DEFAULT_OUTPUT_FOLDER)
 )
 
 OptionParser.new do |opts|
@@ -64,5 +64,4 @@ OptionParser.new do |opts|
   end
 end.parse!
 
-converter = VideoConverter::Converter.new @options
-converter.run
+VideoConverter::Converter.new(@options).run

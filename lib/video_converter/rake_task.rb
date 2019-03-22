@@ -17,7 +17,7 @@ module VideoConverter
   #     :convert,
   #     input: '~/Downloads',
   #     output: '~/Desktop',
-  #     logs: '~/logs/convert_videos'
+  #     logs: '~/logs/video_converter'
   #   )
   class RakeTask < Rake::TaskLib
     def initialize(
@@ -28,15 +28,7 @@ module VideoConverter
     )
       desc 'Convert videos'
       task name do
-        options = VideoConverter::Converter::Options.new(
-          false,
-          false,
-          true,
-          input,
-          logs,
-          output
-        )
-        converter = VideoConverter::Converter.new options
+        converter = VideoConverter::Converter.new input_folder: input, log_folder: logs, output_folder: output
         converter.run
       end
     end

@@ -21,7 +21,7 @@ to fail. By default, the output folder
 is ~/Desktop. This may be overridden with the `-o` option.
 
 By default, the command starts a backround job and leaves log files in a folder
-(~/logs/convert_videos by default, overridden with the `-l` option). It
+(~/logs/video_converter by default, overridden with the `-l` option). It
 removes and recreates the folder each time the script runs. It generates a file
 there called `convert_videos.log` as well as a log file for each conversion.
 
@@ -81,7 +81,7 @@ $ convert_videos -o ~/myvideos
 
 ### Specify a custom log folder
 
-The default log folder is '~/logs/convert_videos'.
+The default log folder is '~/logs/video_converter'.
 
 ```bash
 $ convert_videos -l ~/mylogs
@@ -116,10 +116,24 @@ VideoConverter::RakeTask.new(
   :convert,
   input: '~/Downloads',
   output: '~/Desktop',
-  logs: '~/logs/convert_videos'
+  logs: '~/logs/video_converter'
 )
 ```
 
 ```bash
 $ bundle exec rake convert
+```
+
+## Ruby code
+
+```Ruby
+require 'video_converter'
+VideoConverter::Converter.new(
+  verbose: false,
+  foreground: false,
+  clean: true,
+  input_folder: '~/Downloads',
+  log_folder: '~/logs/video_converter',
+  output_folder: '~/Desktop'
+).run
 ```
