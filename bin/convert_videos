@@ -2,6 +2,7 @@
 
 require 'optparse'
 require 'video_converter/converter'
+require 'video_converter/version'
 
 ################
 # Option parsing
