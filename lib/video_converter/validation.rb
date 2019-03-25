@@ -18,15 +18,6 @@ module VideoConverter
     VIDEO_SUFFIXES = %w[mp4 mov avi wmv flv vob].freeze
     REGEXP = /#{VIDEO_SUFFIXES.join("$|")}/i
 
-    # Logs a message to STDOUT with obfuscation and a timestamp.
-    # @see String#obfuscate!
-    #
-    # @param message [#to_s] A message to log. Will be converted to a String and obfuscated.
-    # @return nil
-    def log(message)
-      STDOUT.log message
-    end
-
     ############
     # formatting
     ############
@@ -52,6 +43,7 @@ module VideoConverter
 
     def all_videos_to_validate
       return @all_videos_to_validate unless @all_videos_to_validate.nil?
+
       @all_videos_to_validate = Dir[File.join(folder_to_validate, '*.mp4')].sort { |f1, f2| File.mtime(f1) <=> File.mtime(f2) }
     end
 
