@@ -5,8 +5,6 @@ require_relative 'util'
 
 module VideoConverter
   module Validation
-    DEFAULT_THRESHOLD = 1.0
-
     THRESHOLD = 0.9
 
     #
