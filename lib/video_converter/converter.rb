@@ -2,8 +2,7 @@ require 'colored'
 require 'fileutils'
 require 'tmpdir'
 require 'tty/platform'
-require_relative 'mp4info'
-require_relative 'util'
+require_relative 'validation'
 
 module VideoConverter
   # Class for video conversion
@@ -30,19 +29,7 @@ module VideoConverter
     DEFAULT_LOG_FOLDER = '~/logs/video_converter'
     DEFAULT_OUTPUT_FOLDER = '~/Desktop'
 
-    THRESHOLD = 0.9
-
-    #
-    # Suffixes to use when looking in options.folder for videos to convert.
-    # All suffixes are recognized both as all lowercase and all uppercase.
-    # For example, myvideo.mp4, myvideo.mov, myvideo.MOV, myvideo.wmv,
-    # myvideo.AVI, etc.
-    #
-    VIDEO_SUFFIXES = %w[mp4 mov avi wmv flv vob].freeze
-    REGEXP = /#{VIDEO_SUFFIXES.join("$|")}/i
-
-    include Util
-    include MP4Info
+    include Validation
 
     attr_reader :options
 
@@ -281,17 +268,9 @@ module VideoConverter
         remove_instance_variable :@tmpdir
       end
 
-      check_sizes log
+      validate log
 
       clean_sources log
-    end
-
-    def check_sizes(log)
-      command = ['check_sizes', "--threshold=#{THRESHOLD}", '--fix', "--folder=#{options.folder}"]
-      command << (verbose? ? '--verbose' : '--no-verbose')
-
-      log.log_command command
-      system(*command, chdir: options.output_folder, %i[err out] => log)
     end
 
     def clean_sources(log)
@@ -327,10 +306,6 @@ module VideoConverter
       system(*command, %i[err out] => :close)
 
       FileUtils.rm_f preview_path
-    end
-
-    def verbose?
-      options.verbose
     end
 
     def foreground?

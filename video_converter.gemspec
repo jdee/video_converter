@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
 
   spec.require_paths = ['lib']
   spec.bindir        = 'bin'
-  spec.executables   = %w{convert_videos check_sizes}
+  spec.executables   = %w{convert_videos}
 
   spec.license       = 'MIT'
 
