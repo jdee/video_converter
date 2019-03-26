@@ -1,5 +1,3 @@
-require 'colored'
-require 'fileutils'
 require 'tmpdir'
 require 'tty/platform'
 require_relative 'validation'

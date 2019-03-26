@@ -1,4 +1,3 @@
-require 'colored'
 require 'fileutils'
 require_relative 'mp4info'
 require_relative 'util'
