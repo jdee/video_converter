@@ -1,5 +1,8 @@
 # video_converter gem
 
+[![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](https://github.com/jdee/video_converter/blob/master/LICENSE)
+[![CircleCI](https://img.shields.io/circleci/project/github/jdee/video_converter.svg)](https://circleci.com/gh/jdee/video_converter)
+
 ## Overview
 
 Batch-converts videos to MP4 format from any recognized format, including MP4.
