@@ -24,7 +24,7 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            bundle check || bundle install --jobs=4 --retry=3 --path vendor/bundle
+            gem install bundler; bundle check || bundle install --jobs=4 --retry=3 --path vendor/bundle
 
       - save_cache:
           paths:
