@@ -1,6 +1,6 @@
 describe String do
   before :all do
-    ENV['HOME'] = '/Users/me' if ENV['HOME'].nil?
+    ENV['HOME'] ||= '/Users/me'
   end
 
   it 'obfuscates the home directory' do
