@@ -10,6 +10,7 @@ Gem::Specification.new do |spec|
                        'videos to reduce bitrate.'
   spec.authors       = ['Jimmy Dee']
   spec.email         = ['jgvdthree@gmail.com']
+  spec.homepage      = 'https://github.com/jdee/video_converter'
 
   spec.files         = Dir['bin/*', 'lib/**/*'] + %w{README.md LICENSE}
   spec.test_files    = spec.files.grep(/_spec/)
