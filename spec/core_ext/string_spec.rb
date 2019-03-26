@@ -7,6 +7,6 @@ describe String do
     home = ENV['HOME']
     input = "#{home}/abc"
     input.obfuscate!
-    expect(input).not_to match(/#{Regexp.quote home}/)
+    expect(input).to equal '~/abc'
   end
 end
