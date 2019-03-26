@@ -127,7 +127,7 @@ VideoConverter::RakeTask.new(
 ```
 
 ```bash
-$ bundle exec rake convert_videos
+$ rake convert_videos
 ```
 
 ## Ruby code
