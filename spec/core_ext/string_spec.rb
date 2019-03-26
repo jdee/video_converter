@@ -7,6 +7,6 @@ describe String do
     home = ENV['HOME']
     input = "#{home}/abc"
     input.obfuscate!
-    expect(input).to equal '~/abc'
+    expect(input).to eq '~/abc'
   end
 end
