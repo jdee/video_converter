@@ -293,16 +293,16 @@ module VideoConverter
         message,
         '-sound',
         'default',
+        '-contentImage',
+        preview_path,
         '-activate',
         'com.apple.Photos' # ,
         # '-open',
         # "file://#{options.output_folder}"
       ]
 
-      command += ['-contentImage', preview_path]
-
       # terminal-notifier is a runtime dependency and so will always be present.
-      # On any platform besides macOS, this command will quietly fail.
+      # On any platform besides macOS, this command will fail.
       system(*command, %i[err out] => :close)
 
       FileUtils.rm_f preview_path
