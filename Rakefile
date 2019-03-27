@@ -22,8 +22,7 @@ VideoConverter::RakeTask.new(
 )
 
 desc 'Remove all generated files'
-task 'clobber:all' do
-  Rake::Task[:clobber].invoke
+task 'clobber:all' => :clobber do
   FileUtils.rm_rf [
     LOG_DIR,
     'coverage',
