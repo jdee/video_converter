@@ -66,31 +66,35 @@ module VideoConverter
       else
         @log_file = File.join options.log_folder, 'convert_videos.log'
 
-        pid = fork do
-          Process.setpriority Process::PRIO_PROCESS, 0, 19
-          STDIN.close # Attempt to avoid SIGHUP
+        if Process.respond_to? :fork
+          pid = fork do
+            Process.setpriority Process::PRIO_PROCESS, 0, 19
+            STDIN.close # Attempt to avoid SIGHUP
 
-          FileUtils.rm_rf options.log_folder
-          FileUtils.mkdir_p options.log_folder
+            FileUtils.rm_rf options.log_folder
+            FileUtils.mkdir_p options.log_folder
 
-          video_count = all_videos.count
-          File.open @log_file, 'w' do |log|
-            log.log "Process priority is #{Process.getpriority Process::PRIO_PROCESS, 0} for PID #{Process.pid}."
+            video_count = all_videos.count
+            File.open @log_file, 'w' do |log|
+              log.log "Process priority is #{Process.getpriority Process::PRIO_PROCESS, 0} for PID #{Process.pid}."
 
-            first_video = all_videos.first if video_count > 0
-            convert_all log: log
+              first_video = all_videos.first if video_count > 0
+              convert_all log: log
 
-            exit(0) unless mac?
+              exit(0) unless mac?
 
-            # Generate a preview
-            if first_video
-              command = make_preview_command output_path(first_video)
-              log.log_command command
-              system(*command, %i[err out] => File.join(options.log_folder, 'preview.log'))
+              # Generate a preview
+              if first_video
+                command = make_preview_command output_path(first_video)
+                log.log_command command
+                system(*command, %i[err out] => File.join(options.log_folder, 'preview.log'))
+              end
+
+              notify_user video_count, log
             end
-
-            notify_user video_count, log
           end
+        else
+          pid = run_in_background
         end
 
         unless pid.zero?
@@ -98,6 +102,35 @@ module VideoConverter
           exit 0
         end
       end
+    end
+
+    def cli_command
+      command = [
+        File.expand_path(File.join('bin', 'convert_videos')),
+        verbose? ? "--verbose" : "--no-verbose",
+        "--foreground",
+        "--folder=#{@options.folder}",
+        "--output-folder=#{@options.output_folder}",
+        "--log-folder=#{@options.log_folder}"
+      ]
+      command << "--no-clean" unless clean?
+      command
+    end
+
+    # Portability method. Executes a foregrounded convert_videos process as a background task,
+    # similar to how #fork is used when available.
+    def run_in_background
+      FileUtils.rm_rf @options.log_folder
+      FileUtils.mkdir_p @options.log_folder
+
+      pid = spawn(*cli_command, %i[err out] => File.join(@options.log_folder, 'convert_videos.log'))
+      if Process.respond_to?(:setpriority) && defined?(Process::PRIO_PROCESS)
+        Process.setpriority Process::PRIO_PROCESS, pid, 19
+        if Process.respond_to?(:getpriority)
+          STDOUT.log "Process priority is #{Process.getpriority Process::PRIO_PROCESS, pid} for PID #{pid}.", obfuscate: false
+        end
+      end
+      pid
     end
 
     def all_videos
