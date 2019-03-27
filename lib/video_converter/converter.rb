@@ -280,6 +280,8 @@ module VideoConverter
     end
 
     def notify_user(count, log)
+      return if count <= 0
+
       message = "Converted #{count} video#{count > 1 ? 's' : ''}."
       log.log message.cyan.bold
 
@@ -297,7 +299,7 @@ module VideoConverter
         # "file://#{options.output_folder}"
       ]
 
-      command += ['-contentImage', preview_path] if count > 0
+      command += ['-contentImage', preview_path]
 
       # terminal-notifier is a runtime dependency and so will always be present.
       # On any platform besides macOS, this command will quietly fail.
