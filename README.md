@@ -53,14 +53,25 @@ running `convert_videos` in the background, no
 notification will be generated. If `ffmpeg` and `mp4v2` are not available,
 this is a fatal error unless they can be installed automatically via `brew`.
 
-## Build and install
+## Try it out
+
+Convert all videos in `~/Downloads`, generating output in `~/Desktop`.
+
+```bash
+git clone https://github.com/jdee/video_converter
+cd video_converter
+bundle check || bundle install
+bundle exec rake convert
+```
+
+## Build and install the gem
 
 ```bash
 $ bundle check || bundle install
 $ [sudo] bundle exec rake install:local
 ```
 
-## Usage
+## CLI Usage
 
 ```bash
 $ convert_videos -h
@@ -107,7 +118,7 @@ gem 'video_converter', path: '~/video_converter'
 
 ```bash
 $ bundle check || bundle install
-$ bundle exec convert_videos -h
+$ bundle exec bin/convert_videos -h
 ```
 
 ## Rake task
