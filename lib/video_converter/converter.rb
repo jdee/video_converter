@@ -272,7 +272,9 @@ module VideoConverter
     end
 
     def convert_all(log: STDOUT)
-      unless check_commands %i[ffmpeg mp4info], log: log
+      # Assuming `which` will fail on Windows. Just allow these commands to fail.
+      # system/popen2e will raise Errno::ENOENT, which will be promptly reported.
+      unless windows? || check_commands(%i[ffmpeg mp4info], log: log)
         log.log 'Please install these packages in order to use this script.'.red.bold
         exit 1
       end
@@ -352,6 +354,11 @@ module VideoConverter
     def mac?
       @platform = TTY::Platform.new if @platform.nil?
       @platform.mac?
+    end
+
+    def windows?
+      @platform = TTY::Platform.new if @platform.nil?
+      @platform.windows?
     end
   end
 end
