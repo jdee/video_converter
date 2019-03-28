@@ -95,8 +95,6 @@ module VideoConverter
     end
 
     def validate(log)
-      exit(1) unless check_commands(:mp4info)
-
       total_savings = 0
       total_size = 0
       all_videos_to_validate.each do |path|
