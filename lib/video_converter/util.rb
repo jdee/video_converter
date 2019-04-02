@@ -58,6 +58,7 @@ module VideoConverter
 
       unless have_brew?
         log.log "brew command not found. Cannot install packages: #{to_install.join ', '}.".yellow
+        log.log "PATH=#{ENV['PATH']}".yellow
         return false
       end
 
