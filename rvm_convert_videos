@@ -1,0 +1,10 @@
+#!/bin/bash
+# Bash script to run convert_videos under control of RVM (for cron).
+
+PATH=${PATH}:/usr/local/bin
+export LANG=en_US.UTF-8
+
+source ~/.rvm/scripts/rvm
+rvm use default
+
+convert_videos > /dev/null 2>&1
