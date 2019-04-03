@@ -18,7 +18,7 @@ VideoConverter::RakeTask.new(
   # clean:         false,         # true by default
   # input_folder:  '~/Downloads', # default value
   # output_folder: '~/Desktop',   # default value
-  log_folder: LOG_DIR
+  log_folder: ENV['VIDEO_CONVERTER_LOG_FOLDER'] || LOG_DIR
 )
 
 desc 'Remove all generated files'

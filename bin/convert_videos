@@ -8,13 +8,15 @@ require 'video_converter/version'
 # Option parsing
 ################
 
+include VideoConverter::Util
+
 @options = VideoConverter::Converter::Options.new(
-  false,
-  false,
-  true,
-  File.expand_path(VideoConverter::Converter::DEFAULT_FOLDER),
-  File.expand_path(VideoConverter::Converter::DEFAULT_LOG_FOLDER),
-  File.expand_path(VideoConverter::Converter::DEFAULT_OUTPUT_FOLDER)
+  boolean_env_var?(:VIDEO_CONVERTER_VERBOSE, default_value: false),
+  boolean_env_var?(:VIDEO_CONVERTER_FOREGROUND, default_value: false),
+  boolean_env_var?(:VIDEO_CONVERTER_CLEAN, default_value: true),
+  ENV['VIDEO_CONVERTER_FOLDER'] || File.expand_path(VideoConverter::Converter::DEFAULT_FOLDER),
+  ENV['VIDEO_CONVERTER_LOG_FOLDER'] || File.expand_path(VideoConverter::Converter::DEFAULT_LOG_FOLDER),
+  ENV['VIDEO_CONVERTER_OUTPUT_FOLDER'] || File.expand_path(VideoConverter::Converter::DEFAULT_OUTPUT_FOLDER)
 )
 
 OptionParser.new do |opts|
