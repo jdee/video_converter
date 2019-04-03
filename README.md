@@ -107,6 +107,24 @@ $ convert_videos -l ~/mylogs
 $ convert_videos -Fo ~/myvideos
 ```
 
+## Environment variables
+
+All modes of invocation (CLI, Rake, Ruby) recognize the following environment
+variables:
+
+```
+VIDEO_CONVERTER_VERBOSE
+VIDEO_CONVERTER_FOREGROUND
+VIDEO_CONVERTER_CLEAN
+VIDEO_CONVERTER_FOLDER
+VIDEO_CONVERTER_LOG_FOLDER
+VIDEO_CONVERTER_OUTPUT_FOLDER
+```
+
+The first three all represent Boolean flags. Any value starting with y or
+t (case-insensitive) indicates a value of true. Any other value will be
+interpreted as false.
+
 ## With a Gemfile
 
 ```Ruby

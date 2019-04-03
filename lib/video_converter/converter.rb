@@ -32,12 +32,14 @@ module VideoConverter
     attr_reader :options
 
     # Create a new Converter. Recognizes the following environment variables:
+    #
     #   VIDEO_CONVERTER_VERBOSE
     #   VIDEO_CONVERTER_FOREGROUND
     #   VIDEO_CONVERTER_CLEAN
     #   VIDEO_CONVERTER_FOLDER
     #   VIDEO_CONVERTER_LOG_FOLDER
     #   VIDEO_CONVERTER_OUTPUT_FOLDER
+    #
     # The first three all represent Boolean flags. Any value starting with y or
     # t (case-insensitive) indicates a value of true. Any other value will be
     # interpreted as false.
