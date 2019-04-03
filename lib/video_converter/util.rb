@@ -74,7 +74,7 @@ module VideoConverter
       value = ENV[var.to_s]
       return default_value if value.nil?
 
-      value =~ /^(y|t)/i
+      /^(y|t)/i.match? value
     end
   end
 end
