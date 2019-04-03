@@ -3,23 +3,23 @@ describe VideoConverter::Util do
 
   describe '#boolean_env_var?' do
     before :all do
-      ENV['FOO_y'] = 'y'
-      ENV['FOO_Y'] = 'Y'
-      ENV['FOO_t'] = 't'
-      ENV['FOO_T'] = 'T'
+      ENV['FOO_y']    = 'y'
+      ENV['FOO_Y']    = 'Y'
+      ENV['FOO_t']    = 't'
+      ENV['FOO_T']    = 'T'
       ENV['FOO_true'] = 'true'
-      ENV['FOO_YES'] = 'YES'
-      ENV['FOO_NO'] = 'NO'
+      ENV['FOO_YES']  = 'YES'
+      ENV['FOO_NO']   = 'NO'
     end
 
     after :all do
-      ENV['FOO_y'] = nil
-      ENV['FOO_Y'] = nil
-      ENV['FOO_t'] = nil
-      ENV['FOO_T'] = nil
-      ENV['FOO_true'] = nil
-      ENV['FOO_YES'] = nil
-      ENV['FOO_NO'] = nil
+      ENV.delete 'FOO_y'
+      ENV.delete 'FOO_Y'
+      ENV.delete 'FOO_t'
+      ENV.delete 'FOO_T'
+      ENV.delete 'FOO_true'
+      ENV.delete 'FOO_YES'
+      ENV.delete 'FOO_NO'
     end
 
     it 'Returns the default value if the variable is not set' do
