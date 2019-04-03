@@ -64,5 +64,17 @@ module VideoConverter
 
       install to_install, log: log
     end
+
+    # Return a Boolean value associated with an environment variable.
+    #
+    # @param var [#to_s] The name of an environment variable
+    # @param default_value [true, false] Returned if the environment variable is not set
+    # @return true if the value of the environment variable begins with y or t (case-insensitive)
+    def boolean_env_var?(var, default_value: false)
+      value = ENV[var.to_s]
+      return default_value if value.nil?
+
+      value =~ /^(y|t)/i
+    end
   end
 end

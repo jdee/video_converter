@@ -31,7 +31,16 @@ module VideoConverter
 
     attr_reader :options
 
-    # Create a new Converter
+    # Create a new Converter. Recognizes the following environment variables:
+    #   VIDEO_CONVERTER_VERBOSE
+    #   VIDEO_CONVERTER_FOREGROUND
+    #   VIDEO_CONVERTER_CLEAN
+    #   VIDEO_CONVERTER_FOLDER
+    #   VIDEO_CONVERTER_LOG_FOLDER
+    #   VIDEO_CONVERTER_OUTPUT_FOLDER
+    # The first three all represent Boolean flags. Any value starting with y or
+    # t (case-insensitive) indicates a value of true. Any other value will be
+    # interpreted as false.
     #
     # @param options [Options] An Options struct containing configuration
     # @param verbose [true, false] Output additional information at times
@@ -42,12 +51,12 @@ module VideoConverter
     # @param output_folder [String] Folder for output MP4 files
     def initialize(
       options = nil,
-      verbose: false,
-      foreground: false,
-      clean: true,
-      input_folder: DEFAULT_FOLDER,
-      log_folder: DEFAULT_LOG_FOLDER,
-      output_folder: DEFAULT_OUTPUT_FOLDER
+      verbose: boolean_env_var?(:VIDEO_CONVERTER_VERBOSE, default_value: false),
+      foreground: boolean_env_var?(:VIDEO_CONVERTER_FOREGROUND, default_value: false),
+      clean: boolean_env_var?(:VIDEO_CONVERTER_CLEAN, default_value: true),
+      input_folder: ENV['VIDEO_CONVERTER_FOLDER'] || DEFAULT_FOLDER,
+      log_folder: ENV['VIDEO_CONVERTER_LOG_FOLDER'] || DEFAULT_LOG_FOLDER,
+      output_folder: ENV['VIDEO_CONVERTER_OUTPUT_FOLDER'] || DEFAULT_OUTPUT_FOLDER
     )
       @options = options || Options.new(
         verbose,
