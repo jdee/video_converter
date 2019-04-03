@@ -1,5 +1,6 @@
 #!/bin/bash
 # Bash script to run convert_videos under control of RVM (for cron).
+# 0  4  *  *  *  /Users/jdee/github/jdee/video_converter/rvm_convert_videos
 
 PATH=${PATH}:/usr/local/bin
 export LANG=en_US.UTF-8
