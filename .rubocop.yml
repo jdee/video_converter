@@ -2,7 +2,7 @@ AllCops:
   Exclude:
     - "examples/**/*"
     - "vendor/**/*"
-  TargetRubyVersion: 2.2
+  TargetRubyVersion: 2.3
 
 Naming/HeredocDelimiterNaming:
   Enabled: false

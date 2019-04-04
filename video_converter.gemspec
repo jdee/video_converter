@@ -21,7 +21,10 @@ Gem::Specification.new do |spec|
 
   spec.license       = 'MIT'
 
-  spec.required_ruby_version = '>= 2.2.0'
+  # 2.3 is no longer supported, but it still ships on macOS Mojave.
+  # It was also the system Ruby on High Sierra. Otherwise this should
+  # be 2.4.
+  spec.required_ruby_version = '>= 2.3.0'
 
   spec.add_dependency 'colored', '~> 1.2'
   spec.add_dependency 'terminal-notifier', '~> 2.0'
