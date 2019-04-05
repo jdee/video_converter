@@ -12,7 +12,7 @@ module VideoConverter
     # For example, myvideo.mp4, myvideo.mov, myvideo.MOV, myvideo.wmv,
     # myvideo.AVI, etc.
     #
-    VIDEO_SUFFIXES = %w[mp4 mov avi wmv flv vob mkv].freeze
+    VIDEO_SUFFIXES = %w[mp4 mov avi wmv flv vob mkv ogm].freeze
     REGEXP = /#{VIDEO_SUFFIXES.join("$|")}/i
 
     ############
