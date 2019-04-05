@@ -31,7 +31,7 @@ describe VideoConverter::Util do
       expect(boolean_env_var?(:FOO_y)).to be true
       expect(boolean_env_var?(:FOO_Y)).to be true
       expect(boolean_env_var?(:FOO_t)).to be true
-      expect(boolean_env_var?(:FOO_t)).to be true
+      expect(boolean_env_var?(:FOO_T)).to be true
       expect(boolean_env_var?(:FOO_true)).to be true
       expect(boolean_env_var?(:FOO_YES)).to be true
     end
