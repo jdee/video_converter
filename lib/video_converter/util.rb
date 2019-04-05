@@ -76,5 +76,17 @@ module VideoConverter
 
       /^(y|t)/i.match? value
     end
+
+    # Return a Float value associated with an environment variable.
+    #
+    # @param var [#to_s] The name of an environment variable
+    # @param default_value [#to_f] Returned if the environment variable is not set
+    # @return [Float] the numeric value of the environment variable or the default_value
+    def float_env_var(var, default_value: 0)
+      value = ENV[var.to_s]
+      return default_value.to_f if value.nil?
+
+      value.to_f
+    end
   end
 end

@@ -20,7 +20,8 @@ module VideoConverter
   #     clean: true,
   #     input_folder: '~/Downloads',
   #     output_folder: '~/Desktop',
-  #     logs_folder: '~/logs/video_converter'
+  #     logs_folder: '~/logs/video_converter',
+  #     crf: 28.0
   #   )
   #
   # Recognizes the following environment variables:
@@ -31,6 +32,7 @@ module VideoConverter
   #   VIDEO_CONVERTER_FOLDER
   #   VIDEO_CONVERTER_LOG_FOLDER
   #   VIDEO_CONVERTER_OUTPUT_FOLDER
+  #   VIDEO_CONVERTER_CRF
   #
   # The first three all represent Boolean flags. Any value starting with y or
   # t (case-insensitive) indicates a value of true. Any other value will be
@@ -46,7 +48,8 @@ module VideoConverter
       clean: boolean_env_var?(:VIDEO_CONVERTER_CLEAN, default_value: true),
       input_folder: ENV['VIDEO_CONVERTER_FOLDER'] || VideoConverter::Converter::DEFAULT_FOLDER,
       output_folder: ENV['VIDEO_CONVERTER_OUTPUT_FOLDER'] || VideoConverter::Converter::DEFAULT_OUTPUT_FOLDER,
-      log_folder: ENV['VIDEO_CONVERTER_LOG_FOLDER'] || VideoConverter::Converter::DEFAULT_LOG_FOLDER
+      log_folder: ENV['VIDEO_CONVERTER_LOG_FOLDER'] || VideoConverter::Converter::DEFAULT_LOG_FOLDER,
+      crf: float_env_var(:VIDEO_CONVERTER_CRF, default_value: VideoConverter::Converter::DEFAULT_CRF)
     )
       desc 'Convert videos'
       task name do
@@ -56,7 +59,8 @@ module VideoConverter
           clean: clean,
           input_folder: input_folder,
           log_folder: log_folder,
-          output_folder: output_folder
+          output_folder: output_folder,
+          crf: crf
         )
         converter.run
       end

@@ -40,4 +40,22 @@ describe VideoConverter::Util do
       expect(boolean_env_var?(:FOO_NO)).to be false
     end
   end
+
+  describe '#float_env_var' do
+    before :all do
+      ENV['FOO_23'] = '23'
+    end
+
+    after :all do
+      ENV.delete 'FOO_23'
+    end
+
+    it 'Returns the default value as a Float if the variable is not set' do
+      expect(float_env_var(:FOO, default_value: '1')).to eq 1.0
+    end
+
+    it 'Returns the Float value of any value' do
+      expect(float_env_var(:FOO_23)).to eq 23.0
+    end
+  end
 end

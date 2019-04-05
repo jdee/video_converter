@@ -18,6 +18,7 @@ VideoConverter::RakeTask.new(
   # clean:         false,         # true by default
   # input_folder:  '~/Downloads', # default value
   # output_folder: '~/Desktop',   # default value
+  # crf:           28.0,          # default value
   log_folder: ENV['VIDEO_CONVERTER_LOG_FOLDER'] || LOG_DIR
 )
 

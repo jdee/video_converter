@@ -20,12 +20,14 @@ module VideoConverter
       :clean,
       :folder,
       :log_folder,
-      :output_folder
+      :output_folder,
+      :crf
     )
 
     DEFAULT_FOLDER = '~/Downloads'
     DEFAULT_LOG_FOLDER = '~/logs/video_converter'
     DEFAULT_OUTPUT_FOLDER = '~/Desktop'
+    DEFAULT_CRF = 28.0
 
     include Validation
 
@@ -39,6 +41,7 @@ module VideoConverter
     #   VIDEO_CONVERTER_FOLDER
     #   VIDEO_CONVERTER_LOG_FOLDER
     #   VIDEO_CONVERTER_OUTPUT_FOLDER
+    #   VIDEO_CONVERTER_CRF
     #
     # The first three all represent Boolean flags. Any value starting with y or
     # t (case-insensitive) indicates a value of true. Any other value will be
@@ -51,6 +54,7 @@ module VideoConverter
     # @param input_folder [String] Folder to scan for input videos
     # @param log_folder [String] Folder for log files (background)
     # @param output_folder [String] Folder for output MP4 files
+    # @param crf [Float] CRF value to use when converting to MP4 with H.264 (0-51)
     def initialize(
       options = nil,
       verbose: boolean_env_var?(:VIDEO_CONVERTER_VERBOSE, default_value: false),
@@ -58,15 +62,20 @@ module VideoConverter
       clean: boolean_env_var?(:VIDEO_CONVERTER_CLEAN, default_value: true),
       input_folder: ENV['VIDEO_CONVERTER_FOLDER'] || DEFAULT_FOLDER,
       log_folder: ENV['VIDEO_CONVERTER_LOG_FOLDER'] || DEFAULT_LOG_FOLDER,
-      output_folder: ENV['VIDEO_CONVERTER_OUTPUT_FOLDER'] || DEFAULT_OUTPUT_FOLDER
+      output_folder: ENV['VIDEO_CONVERTER_OUTPUT_FOLDER'] || DEFAULT_OUTPUT_FOLDER,
+      crf: float_env_var(:VIDEO_CONVERTER_CRF, default_value: DEFAULT_CRF)
     )
+      the_crf = options ? options.crf : crf
+      raise ArgumentError, "Illegal CRF value #{the_crf}. Legal values are 0-51." if the_crf < 0 || the_crf > 51
+
       @options = options || Options.new(
         verbose,
         foreground,
         clean,
         File.expand_path(input_folder),
         File.expand_path(log_folder),
-        File.expand_path(output_folder)
+        File.expand_path(output_folder),
+        crf
       )
     end
 
@@ -180,8 +189,8 @@ module VideoConverter
       command = ['ffmpeg', '-i', path]
 
       if conversions.include? :video
-        # Use -crf 28 for H.264 when converting to MP4.
-        command += %w[-crf 28] if output_path.is_mp4?
+        # Use -crf options.crf for H.264 when converting to MP4.
+        command += ['-crf', options.crf.to_s] if output_path.is_mp4?
         command += %w[-codec:audio copy] unless conversions.include?(:audio) || output_path.video_type != path.video_type
       end
 
@@ -289,6 +298,8 @@ module VideoConverter
         log.log 'Please install these packages in order to use this script.'.red.bold
         exit 1
       end
+
+      log.log "CRF value #{options.crf} is outside the recommended range of 18-28.".yellow if options.crf < 18 || options.crf > 28
 
       FileUtils.mkdir_p options.output_folder unless Dir.exist?(options.output_folder)
 

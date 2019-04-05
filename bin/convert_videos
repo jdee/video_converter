@@ -16,21 +16,23 @@ include VideoConverter::Util
   boolean_env_var?(:VIDEO_CONVERTER_CLEAN, default_value: true),
   ENV['VIDEO_CONVERTER_FOLDER'] || File.expand_path(VideoConverter::Converter::DEFAULT_FOLDER),
   ENV['VIDEO_CONVERTER_LOG_FOLDER'] || File.expand_path(VideoConverter::Converter::DEFAULT_LOG_FOLDER),
-  ENV['VIDEO_CONVERTER_OUTPUT_FOLDER'] || File.expand_path(VideoConverter::Converter::DEFAULT_OUTPUT_FOLDER)
+  ENV['VIDEO_CONVERTER_OUTPUT_FOLDER'] || File.expand_path(VideoConverter::Converter::DEFAULT_OUTPUT_FOLDER),
+  float_env_var(:VIDEO_CONVERTER_CRF, default_value: VideoConverter::Converter::DEFAULT_CRF)
 )
 
 OptionParser.new do |opts|
-  prefix = 'Usage: convert_videos'
+  prefix = 'Usage: convert_videos '
   indent = ' ' * prefix.length
 
-  opts.banner = "#{prefix} [-h|--help]\n" \
+  opts.banner = "#{prefix}[-h|--help]\n" \
     "#{indent}[-v|--version]\n" \
     "#{indent}[-V|--[no-]verbose]\n" \
     "#{indent}[-F|--[no-]foreground]\n" \
     "#{indent}[--[no-]clean]\n" \
     "#{indent}[-f FOLDER|--folder=FOLDER]\n" \
     "#{indent}[-l LOG_FOLDER|--log-folder=LOG_FOLDER]\n" \
-    "#{indent}[-o OUTPUT_FOLDER|--output-folder=OUTPUT_FOLDER]"
+    "#{indent}[-o OUTPUT_FOLDER|--output-folder=OUTPUT_FOLDER]\n" \
+    "#{indent}[-c CRF|--crf=CRF]"
 
   opts.on '-h', '--help', 'Prints this help' do
     puts opts
@@ -64,6 +66,10 @@ OptionParser.new do |opts|
 
   opts.on '-o OUTPUT_FOLDER', '--output-folder=OUTPUT_FOLDER', "Folder for output files (String: default #{VideoConverter::Converter::DEFAULT_OUTPUT_FOLDER})" do |o|
     @options.output_folder = o
+  end
+
+  opts.on '-c CRF', '--crf=CRF', "CRF value for H.264 (Float 0-51: default #{VideoConverter::Converter::DEFAULT_CRF})" do |c|
+    @options.crf = c.to_f
   end
 end.parse!
 

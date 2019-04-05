@@ -23,6 +23,10 @@ an input MP4 video may be overwritten and lost, causing the conversion
 to fail. By default, the output folder
 is ~/Desktop. This may be overridden with the `-o` option.
 
+MP4 files are generated using the H.264 codec using a CRF that may be specified
+as an option. Legal values are 0-51. Recommended values are 18-28. The default
+is 28. Override this using the `-c` option.
+
 By default, the command starts a backround job and leaves log files in a folder
 (~/logs/video_converter by default, overridden with the `-l` option). It
 removes and recreates the folder each time the script runs. It generates a file
@@ -107,6 +111,12 @@ $ convert_videos -l ~/mylogs
 $ convert_videos -Fo ~/myvideos
 ```
 
+### Convert videos with a CRF of 23
+
+```bash
+$ convert_videos -c 23
+```
+
 ## Environment variables
 
 All modes of invocation (CLI, Rake, Ruby) recognize the following environment
@@ -119,6 +129,7 @@ VIDEO_CONVERTER_CLEAN
 VIDEO_CONVERTER_FOLDER
 VIDEO_CONVERTER_LOG_FOLDER
 VIDEO_CONVERTER_OUTPUT_FOLDER
+VIDEO_CONVERTER_CRF
 ```
 
 The first three all represent Boolean flags. Any value starting with y or
@@ -151,7 +162,8 @@ VideoConverter::RakeTask.new(
   clean: true,
   input_folder: '~/Downloads',
   output_folder: '~/Desktop',
-  log_folder: '~/logs/video_converter'
+  log_folder: '~/logs/video_converter',
+  crf: 28.0
 )
 ```
 
@@ -169,6 +181,7 @@ VideoConverter::Converter.new(
   clean: true,
   input_folder: '~/Downloads',
   log_folder: '~/logs/video_converter',
-  output_folder: '~/Desktop'
+  output_folder: '~/Desktop',
+  crf: 28.0
 ).run
 ```
