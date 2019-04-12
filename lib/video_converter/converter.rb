@@ -88,7 +88,7 @@ module VideoConverter
 
         if Process.respond_to? :fork
           pid = fork do
-            Process.setpriority Process::PRIO_PROCESS, 0, 19
+            nice_process
             STDIN.close # Attempt to avoid SIGHUP
 
             FileUtils.rm_rf options.log_folder
@@ -96,7 +96,7 @@ module VideoConverter
 
             video_count = all_videos.count
             File.open @log_file, 'w' do |log|
-              log.log "Process priority is #{Process.getpriority Process::PRIO_PROCESS, 0} for PID #{Process.pid}."
+              report_process_priority log: log
 
               first_video = all_videos.first if video_count > 0
               convert_all log: log
@@ -144,13 +144,22 @@ module VideoConverter
       FileUtils.mkdir_p @options.log_folder
 
       pid = spawn(*cli_command, %i[err out] => File.join(@options.log_folder, 'convert_videos.log'))
-      if Process.respond_to?(:setpriority) && defined?(Process::PRIO_PROCESS)
-        Process.setpriority Process::PRIO_PROCESS, pid, 19
-        if Process.respond_to?(:getpriority)
-          STDOUT.log "Process priority is #{Process.getpriority Process::PRIO_PROCESS, pid} for PID #{pid}.", obfuscate: false
-        end
-      end
+      nice_process pid
+      report_process_priority pid
       pid
+    end
+
+    def nice_process(pid = 0)
+      return unless Process.respond_to?(:setpriority) && defined?(Process::PRIO_PROCESS)
+
+      Process.setpriority Process::PRIO_PROCESS, pid, 19
+    end
+
+    def report_process_priority(pid = 0, log: STDOUT)
+      return unless Process.respond_to?(:getpriority) && defined?(Process::PRIO_PROCESS)
+
+      pid_to_report = pid.zero? ? Process.pid : pid
+      log.log "Process priority is #{Process.getpriority Process::PRIO_PROCESS, pid} for PID #{pid_to_report}.", obfuscate: false
     end
 
     def all_videos
