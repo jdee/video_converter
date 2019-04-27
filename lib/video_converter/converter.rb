@@ -375,7 +375,7 @@ module VideoConverter
       # terminal-notifier is a runtime dependency and so will always be present.
       # On any platform besides macOS, this command will fail.
       begin
-        execute(*command, quiet: true, output: :close)
+        execute(*command, log: nil, output: :close)
       rescue ExecutionError # ignore errors
       end
 

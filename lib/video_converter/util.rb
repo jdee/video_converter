@@ -17,12 +17,11 @@ module VideoConverter
     #
     # @param command Variadic command to be executed
     # @param output [String, Symbol, IO] Output for command (path, IO or a symbol such as :close)
-    # @param log [IO] Open IO for main log
-    # @param quiet [true, false] Command is logged to main log unless quiet is true
+    # @param log [IO, nil] Open IO for main log (nil to suppress logging command to main log)
     # @return nil
     # @raise ExecutionError If the command fails
-    def execute(*command, output: STDOUT, log: STDOUT, quiet: false)
-      log.log_command command unless quiet
+    def execute(*command, output: STDOUT, log: STDOUT)
+      log.log_command command unless log.nil?
 
       system(*command, %i[err out] => output)
 
