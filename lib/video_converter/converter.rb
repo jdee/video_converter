@@ -3,6 +3,14 @@ require 'tty/platform'
 require_relative 'validation'
 
 module VideoConverter
+  # Base class for exceptions from this gem
+  class VideoConverterException < RuntimeError
+  end
+
+  # Exception raised by Converter#convert_file when conversion fails
+  class ConversionError < VideoConverterException
+  end
+
   # Class for video conversion
   #    require 'video_converter/converter'
   #    VideoConverter::Converter.new(
@@ -98,14 +106,13 @@ module VideoConverter
             File.open @log_file, 'w' do |log|
               report_process_priority log: log
 
-              first_video = all_videos.first if video_count > 0
               convert_all log: log
 
               exit(0) unless mac?
 
               # Generate a preview
-              if first_video
-                command = make_preview_command output_path(first_video)
+              if all_videos.first
+                command = make_preview_command output_path(all_videos.first)
                 log.log_command command
                 system(*command, %i[err out] => File.join(options.log_folder, 'preview.log'))
               end
@@ -247,6 +254,14 @@ module VideoConverter
       File.join Dir.tmpdir, 'preview.jpg'
     end
 
+    # Convert the file at path. If log_path is non-nil, generate a log
+    # at that location. Main log (open) is log.
+    #
+    # @param path [String] Path to a file to be converted
+    # @param log_path [String, nil] Path to a log file for the conversion
+    # @param log [IO] Open IO for main log
+    # @return nil
+    # @raise ConversionError If the conversion fails
     def convert_file(path, log_path, log)
       if path.is_mp4?
         # Convert mp4s in two steps.
@@ -260,6 +275,8 @@ module VideoConverter
         else
           system(*command)
         end
+
+        raise ConversionError unless $?.success?
 
         # Now determine the audio bitrates of the original and the file in the temp folder.
         orig_audio_bitrate = audio_bitrate path
@@ -281,6 +298,8 @@ module VideoConverter
           system(*command)
         end
 
+        raise ConversionError unless $?.success?
+
         FileUtils.rm_f temp_path(path)
 
         # This results in a file with minimum audio bitrate (original or reduced)
@@ -293,6 +312,8 @@ module VideoConverter
         else
           system(*command)
         end
+
+        raise ConversionError unless $?.success?
       end
 
       FileUtils.touch(output_path(path), mtime: File.mtime(path))
@@ -316,6 +337,7 @@ module VideoConverter
         @tmpdir = dir
 
         print_to_be_converted log
+        failures = []
         all_videos.each do |path|
           if log.respond_to? :path
             log_path = File.join options.log_folder, File.basename(path.sub(REGEXP, 'log'))
@@ -323,10 +345,18 @@ module VideoConverter
             log.log "input: #{path}, output: #{output_path}, log: #{log_path}" if verbose?
           end
 
-          convert_file path, log_path, log
+          begin
+            convert_file path, log_path, log
+          rescue ConversionError
+            log.log "Conversion failed for #{path}.".yellow
+            FileUtils.rm_f output_path(path)
+            failures << path
+          end
         end
 
-        log.log 'Finished converting all videos.'.cyan.bold
+        @all_videos -= failures
+
+        log.log "Finished converting all videos. #{@all_videos.count} succeeded. #{failures.count} failed.".cyan.bold
 
         # @tmpdir about to be deleted
         remove_instance_variable :@tmpdir
@@ -338,7 +368,7 @@ module VideoConverter
     end
 
     def clean_sources(log)
-      return unless clean? && File.writable?(options.folder)
+      return unless clean? && File.writable?(options.folder) && all_videos.count > 0
 
       log.log 'Removing:'
       all_videos.each { |v| log.log "  #{v}" }
