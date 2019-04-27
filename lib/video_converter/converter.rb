@@ -3,14 +3,6 @@ require 'tty/platform'
 require_relative 'validation'
 
 module VideoConverter
-  # Base class for exceptions from this gem
-  class VideoConverterException < RuntimeError
-  end
-
-  # Exception raised by Converter#convert_file when conversion fails
-  class ConversionError < VideoConverterException
-  end
-
   # Class for video conversion
   #    require 'video_converter/converter'
   #    VideoConverter::Converter.new(
@@ -113,8 +105,7 @@ module VideoConverter
               # Generate a preview
               if all_videos.first
                 command = make_preview_command output_path(all_videos.first)
-                log.log_command command
-                system(*command, %i[err out] => File.join(options.log_folder, 'preview.log'))
+                execute(*command, log: log, output: File.join(options.log_folder, 'preview.log'))
               end
 
               notify_user video_count, log
@@ -261,7 +252,7 @@ module VideoConverter
     # @param log_path [String, nil] Path to a log file for the conversion
     # @param log [IO] Open IO for main log
     # @return nil
-    # @raise ConversionError If the conversion fails
+    # @raise ExecutionError If the conversion fails
     def convert_file(path, log_path, log)
       if path.is_mp4?
         # Convert mp4s in two steps.
@@ -269,14 +260,9 @@ module VideoConverter
         # Step 1: Convert audio without converting video.
         # Generates file.mp4 in a temporary folder.
         command = convert_audio_command path
-        log.log_command command
-        if log_path
-          system(*command, %i[out err] => log_path)
-        else
-          system(*command)
-        end
 
-        raise ConversionError unless $?.success?
+        # raises ExecutionError
+        execute(*command, output: log_path, log: log)
 
         # Now determine the audio bitrates of the original and the file in the temp folder.
         orig_audio_bitrate = audio_bitrate path
@@ -291,14 +277,8 @@ module VideoConverter
         # Generates file.mp4 in options.output_folder.
         command = convert_video_command input
 
-        log.log_command command
-        if log_path
-          system(*command, %i[out err] => log_path)
-        else
-          system(*command)
-        end
-
-        raise ConversionError unless $?.success?
+        # raises ExecutionError
+        execute(*command, output: log_path, log: log)
 
         FileUtils.rm_f temp_path(path)
 
@@ -306,14 +286,9 @@ module VideoConverter
         # and a reduced video bitrate without converting audio or video twice.
       else
         command = conversion_command path, output_path(path)
-        log.log_command command
-        if log_path
-          system(*command, %i[out err] => log_path)
-        else
-          system(*command)
-        end
 
-        raise ConversionError unless $?.success?
+        # raises ExecutionError
+        execute(*command, output: log_path, log: log)
       end
 
       FileUtils.touch(output_path(path), mtime: File.mtime(path))
@@ -347,7 +322,7 @@ module VideoConverter
 
           begin
             convert_file path, log_path, log
-          rescue ConversionError
+          rescue ExecutionError
             log.log "Conversion failed for #{path}.".yellow
             FileUtils.rm_f output_path(path)
             failures << path
@@ -399,7 +374,10 @@ module VideoConverter
 
       # terminal-notifier is a runtime dependency and so will always be present.
       # On any platform besides macOS, this command will fail.
-      system(*command, %i[err out] => :close)
+      begin
+        execute(*command, quiet: true, output: :close)
+      rescue ExecutionError # ignore errors
+      end
 
       FileUtils.rm_f preview_path
     end

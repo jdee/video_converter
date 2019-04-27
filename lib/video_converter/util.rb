@@ -2,8 +2,35 @@ require 'colored'
 require_relative File.join('core_ext', 'io')
 
 module VideoConverter
+  # Base class for exceptions from this gem
+  class VideoConverterException < RuntimeError
+  end
+
+  # Exception raised by Converter#convert_file when conversion fails
+  class ExecutionError < VideoConverterException
+  end
+
   # Module with utility methods
   module Util
+    # Execute the specified command. If output is non-nil, generate a log
+    # at that location. Main log (open) is log.
+    #
+    # @param command Variadic command to be executed
+    # @param output [String, Symbol, IO] Output for command (path, IO or a symbol such as :close)
+    # @param log [IO] Open IO for main log
+    # @param quiet [true, false] Command is logged to main log unless quiet is true
+    # @return nil
+    # @raise ExecutionError If the command fails
+    def execute(*command, output: STDOUT, log: STDOUT, quiet: false)
+      log.log_command command unless quiet
+
+      system(*command, %i[err out] => output)
+
+      raise ExecutionError unless $?.success?
+
+      nil
+    end
+
     # List of commands whose package names differ from the command.
     EXCEPTIONS = { mp4info: :mp4v2 }
 
@@ -24,16 +51,16 @@ module VideoConverter
       !`which #{command}`.empty?
     end
 
-    # Install a package using homebrew.
+    # Install packages using homebrew.
     #
     # @param packages [#to_s, Array<#to_s>] Packages to be installed via homebrew
     # @param log [IO] Optional log to write to
-    # @return true if successful, false otherwise
+    # @return nil
+    # @raise ExecutionError If installation fails
     def install(packages, log: STDOUT)
       packages = [packages] unless packages.kind_of?(Array)
       command = ['brew', 'install', *packages.map(&:to_s)]
-      log.log_command command
-      system(*command, %i[err out] => log)
+      execute(*command, output: log, log: log)
     end
 
     # Get the package for a required command.
@@ -62,7 +89,12 @@ module VideoConverter
         return false
       end
 
-      install to_install, log: log
+      begin
+        install to_install, log: log
+        true
+      rescue ExecutionError
+        false
+      end
     end
 
     # Return a Boolean value associated with an environment variable.
