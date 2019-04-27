@@ -103,10 +103,7 @@ module VideoConverter
               exit(0) unless mac?
 
               # Generate a preview
-              if all_videos.first
-                command = make_preview_command output_path(all_videos.first)
-                execute(*command, log: log, output: File.join(options.log_folder, 'preview.log'))
-              end
+              make_preview log if all_videos.first
 
               notify_user video_count, log
             end
@@ -233,6 +230,12 @@ module VideoConverter
       ['ffmpeg', '-i', path, '-f', 'image2', '-filter', "crop=#{crop}", '-vframes', '1', '-y', preview_path]
     end
 
+    def make_preview(log)
+      command = make_preview_command output_path(all_videos.first)
+      execute(*command, log: log, output: File.join(options.log_folder, 'preview.log'))
+    rescue ExecutionError # ignore
+    end
+
     def output_path(path)
       File.join(options.output_folder, File.basename(path.sub(REGEXP, 'mp4')))
     end
@@ -242,7 +245,9 @@ module VideoConverter
     end
 
     def preview_path
-      File.join Dir.tmpdir, 'preview.jpg'
+      return @preview_path if @preview_path
+
+      @preview_path = File.join Dir.tmpdir, 'preview.jpg'
     end
 
     # Convert the file at path. If log_path is non-nil, generate a log
@@ -354,6 +359,7 @@ module VideoConverter
       return if count <= 0
 
       message = "Converted #{count} video#{count > 1 ? 's' : ''}."
+      message << " (#{count - all_videos.count} failed.)" unless count == all_videos.count
       log.log message.cyan.bold
 
       command = [
@@ -364,13 +370,13 @@ module VideoConverter
         message,
         '-sound',
         'default',
-        '-contentImage',
-        preview_path,
         '-activate',
         'com.apple.Photos' # ,
         # '-open',
         # "file://#{options.output_folder}"
       ]
+
+      command += ['-contentImage', preview_path] if File.exist?(preview_path)
 
       # terminal-notifier is a runtime dependency and so will always be present.
       # On any platform besides macOS, this command will fail.
