@@ -25,7 +25,7 @@ module VideoConverter
 
       system(*command, %i[err out] => output)
 
-      raise ExecutionError unless $?.success?
+      raise ExecutionError, "#{command.shelljoin}: #{$?}" unless $?.success?
 
       nil
     end
