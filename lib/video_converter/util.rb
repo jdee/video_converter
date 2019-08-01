@@ -105,7 +105,7 @@ module VideoConverter
       value = ENV[var.to_s]
       return default_value if value.nil?
 
-      /^(y|t)/i.match? value
+      /^[yt]/i.match? value
     end
 
     # Return a Float value associated with an environment variable.
