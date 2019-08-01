@@ -89,7 +89,8 @@ module VideoConverter
         if Process.respond_to? :fork
           pid = fork do
             nice_process
-            STDIN.close # Attempt to avoid SIGHUP
+            # Ignore SIGHUP when parent process dies
+            Signal.trap 'HUP', 'IGNORE'
 
             FileUtils.rm_rf options.log_folder
             FileUtils.mkdir_p options.log_folder
@@ -133,7 +134,7 @@ module VideoConverter
     end
 
     # Portability method. Executes a foregrounded convert_videos process as a background task,
-    # similar to how #fork is used when available.
+    # similar to how Kernel#fork is used when available.
     def run_in_background
       FileUtils.rm_rf @options.log_folder
       FileUtils.mkdir_p @options.log_folder

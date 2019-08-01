@@ -1,6 +1,6 @@
 require 'rake'
 require 'rake/tasklib'
-require_relative File.join('..', 'video_converter', 'converter')
+require_relative 'converter'
 
 module VideoConverter
   # Rake task for video-converter gem.
